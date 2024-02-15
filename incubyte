@@ -1,5 +1,11 @@
 class StringCalculator {
+  constructor() {
+    this.addCount = 0;
+  }
+
   add(numbers) {
+    this.addCount++;
+
     if (numbers === "") {
       return 0;
     }
@@ -13,9 +19,9 @@ class StringCalculator {
     }
 
     
-    const numberArray = numbers.split(/[\n,]+/);
+    const numberArray = numbers.split(new RegExp(`[\n${delimiter}]+`));
 
-    // Calculate sum and handle negative numbers
+    
     let sum = 0;
     let negatives = [];
 
@@ -24,25 +30,38 @@ class StringCalculator {
 
       if (num < 0) {
         negatives.push(num);
-      } else {
+      } else if (num <= 1000) {
         sum += num;
       }
     }
 
-    
+    // Throw exception for negative numbers
     if (negatives.length > 0) {
-      throw new Error(`Negative numbers not allowed: ${negatives.join(",")}`);
+      throw new Error(`Negatives not allowed: ${negatives.join(",")}`);
     }
 
     return sum;
   }
+
+  getCalledCount() {
+    return this.addCount;
+  }
+
+  onAdd(callback) {
+    this.addOccured = callback;
+  }
+
+  triggerAddEvent(input, result) {
+    if (this.addOccured) {
+      this.addOccured(input, result);
+    }
+  }
 }
 
-// Example usage:
+// Example 
 const calculator = new StringCalculator();
 
-console.log(calculator.add(""));        
-console.log(calculator.add("1"));       
-console.log(calculator.add("1,5"));
-console.log(calculator.add("1\n2,3"));  
-console.log(calculator.add("//;\n1;2"));
+console.log(calculator.add("1\n2,3"));          
+console.log(calculator.add("//;\n1;2"));         
+console.log(calculator.add("//[*][%]\n1*2%3"));  
+console.log(calculator.getCalledCount());        
